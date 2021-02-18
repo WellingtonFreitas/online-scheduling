@@ -1,18 +1,46 @@
 import React from 'react';
 import { NextPage } from 'next';
+import { signIn, signOut, useSession } from 'next-auth/client';
+
+import { Lottie } from '@crello/react-lottie';
+import loadingAnimation from '../src/animations/loading.json'
 
 const IndexPage: NextPage = () => {
-  return (
-    <div>
-      <div className="py-60">
-        <h1 className="text-5lx text-center text-accent-1">
-          Next.js + Tailwind CSS
-        </h1>
+  const [session, loading] = useSession()
 
+  return (
+    <>
+      { loading && (
+          <div>          
+          <Lottie
+            width="200px"
+            height="200px"
+            className="lottie-container basic"
+            config={{ animationData: loadingAnimation, loop: true, autoplay: true }}
+          />
+          <h1>LOADING</h1>
+        </div>
+      )}
+
+      {!session && (
+        <div className="text-3xl">
+          Not signed in <br />
+          <button onClick={() => signIn("auth0")}>Sign in</button>
       </div>
-    </div>
+      )}
+      {session && (
+        <div className="text-3xl">
+          <div className="text-4xl">
+            Signed in as {session.user.email}
+          </div>
+          <br />
+          <button onClick={() => signOut()}>Sign out</button>
+        </div>
+      )}
+    </>
   );
 
 }
 
 export default IndexPage;
+
